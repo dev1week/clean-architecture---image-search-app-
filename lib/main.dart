@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_search/UI/home_screen.dart';
+import 'package:image_search/data/api.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           scaffoldBackgroundColor: Colors.white,
         ),
-      home: const HomeScreen()
+      home:  HomeScreen(api: PixabayApi()),
     );
   }
 }

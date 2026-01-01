@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_search/UI/home_screen.dart';
-import 'package:image_search/data/api.dart';
+import 'package:image_search/data/pixabay_api.dart';
 import 'UI/home_view_model.dart';
 import 'data/photo_provider.dart';
 

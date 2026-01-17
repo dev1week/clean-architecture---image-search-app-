@@ -13,12 +13,16 @@ class HomeViewModel {
   final _eventController = StreamController<HomeUiEvent>();
   Stream<HomeUiEvent> get eventStream => _eventController.stream;
 
+  final _loadingController = StreamController<bool>()..add(false);
+  Stream<bool> get isLoadingStream => _loadingController.stream;
+
 
   HomeViewModel(this.repository);
 
   Future<void> fetch(String query) async{
-    final Result<List<Photo>> result = await repository.fetch(query);
+    _loadingController.add(true);
 
+    final Result<List<Photo>> result = await repository.fetch(query);
 
     switch (result) {
       case Success<List<Photo>>():
@@ -27,5 +31,6 @@ class HomeViewModel {
         _eventController.add(HomeUiEvent.showSnackBar(result.message));
     }
 
+    _loadingController.add(false);
   }
 }

@@ -1,4 +1,4 @@
-abstract class Result<T>{
+sealed class Result<T>{
   factory Result.success(T data) = Success;
   factory Result.error(String message) = Error;
 }

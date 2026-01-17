@@ -13,14 +13,15 @@ class PhotoApiRepositoryImpl extends PhotoApiRepository{
 
   @override
   Future<Result<List<Photo>>> fetch(String query) async{
-    final Result result =  await api.fetch(query );
+    final Result<Iterable> result =  await api.fetch(query);
 
-    if(result is Error){
-      return Result.error(result.message);
-    }else if(result is Success){
-      return Result.success(result.data.map((e) => Photo.fromJson(e)).toList());
-    }else{
-      return Result.error("not defined error");
+    switch (result) {
+      case Success<Iterable>():
+        return Result.success(
+            result.data.map((e) => Photo.fromJson(e)).toList()
+        );
+      case Error<Iterable>():
+        return Result.error(result.message);
     }
   }
 }

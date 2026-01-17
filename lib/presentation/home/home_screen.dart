@@ -33,15 +33,16 @@ class _HomeScreenState extends State<HomeScreen> {
       final viewModel = PhotoProvider.of(context).viewModel;
 
       _subscription = viewModel.eventStream.listen((event) {
-      switch (event) {
-        case ShowSnackBar(: final data):
-          showSnackBar(data);
-          break;}
+        switch (event) {
+          case ShowSnackBar(:final data):
+            showSnackBar(data);
+            break;
+        }
       });
     });
   }
 
-  void showSnackBar(String data){
+  void showSnackBar(String data) {
     final snackBar = SnackBar(content: Text(data));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
@@ -78,28 +79,44 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           StreamBuilder<List<Photo>>(
             stream: viewModel.photoStream,
-            builder: (context, snapshot) {
-              if(!snapshot.hasData){
-                return CircularProgressIndicator();
+            builder: (context, photoSnapshot) {
+
+              if (!photoSnapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
               }
 
-              final photos = snapshot.data;
+              final photos = photoSnapshot.data!;
 
-              return Expanded(
-                child: GridView.builder(
-                  padding: const EdgeInsets.all(16.0),
-                  itemCount: photos?.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                  ),
-                  itemBuilder: (context, index) {
-                    return PhotoWidget(photo: photos![index]);
-                  },
-                ),
+              return StreamBuilder<bool>(
+                stream: viewModel.isLoadingStream, // ViewModel에 만드신 로딩 스트림
+                initialData: false,
+                builder: (context, loadingSnapshot) {
+                  final isLoading = loadingSnapshot.data ?? false;
+
+                  if (isLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  return Expanded(
+                    child: photos.isEmpty
+                        ? const Center(child: Text("검색 결과가 없습니다."))
+                        : GridView.builder(
+                            padding: const EdgeInsets.all(16.0),
+                            itemCount: photos.length,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 16,
+                                  mainAxisSpacing: 16,
+                                ),
+                            itemBuilder: (context, index) {
+                              return PhotoWidget(photo: photos[index]);
+                            },
+                          ),
+                  );
+                },
               );
-            }
+            },
           ),
         ],
       ),

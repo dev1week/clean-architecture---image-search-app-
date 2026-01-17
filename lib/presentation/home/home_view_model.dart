@@ -1,13 +1,15 @@
 import 'dart:async';
+import 'package:image_search/domain/use_case/get_photo_use_case.dart';
+
 import '../../data/data_source/result.dart';
 import '../../domain/repository/photo_api_repository.dart';
 import 'home_state.dart';
 import 'home_ui_event.dart';
 
 class HomeViewModel {
-  final PhotoApiRepository repository;
+  final GetPhotoUseCase getPhotoUseCase;
 
-  HomeViewModel(this.repository);
+  HomeViewModel(this.getPhotoUseCase);
 
   final _eventController = StreamController<HomeUiEvent>();
   Stream<HomeUiEvent> get eventStream => _eventController.stream;
@@ -19,7 +21,7 @@ class HomeViewModel {
   Future<void> fetch(String query) async {
     _updateState(_state.copyWith(isLoading: true));
 
-    final result = await repository.fetch(query);
+    final result = await getPhotoUseCase.execute(query);
 
     switch (result) {
       case Success(data: final data):

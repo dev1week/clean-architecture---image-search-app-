@@ -1,7 +1,6 @@
 import 'dart:async';
-import 'package:image_search/data/photo_api_repository.dart';
-
-import '../model/Photo.dart';
+import '../../domain/repository/photo_api_repository.dart';
+import '../../domain/model/photo.dart';
 
 class HomeViewModel {
   final PhotoApiRepository repository;
@@ -15,5 +14,4 @@ class HomeViewModel {
     final result = await repository.fetch(query);
     _photoStreamController.add(result);
   }
-
 }

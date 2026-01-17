@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:image_search/UI/home_screen.dart';
-import 'package:image_search/data/pixabay_api.dart';
-import 'UI/home_view_model.dart';
+import 'package:image_search/domain/repository/photo_api_repository.dart';
+import 'package:image_search/presentation/home/home_screen.dart';
+import 'package:image_search/data/repository/photo_api_repository_impl.dart';
+import 'package:image_search/presentation/home/home_view_model.dart';
+import 'data/data_source/pixabay_api.dart';
 import 'data/photo_provider.dart';
 
 void main() {
@@ -20,7 +22,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.white,
       ),
       home: PhotoProvider(
-        viewModel: HomeViewModel(PixabayApi()),
+        viewModel: HomeViewModel(PhotoApiRepositoryImpl()),
         child: const HomeScreen(),
       ),
     );

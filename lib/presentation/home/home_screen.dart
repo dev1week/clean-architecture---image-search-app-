@@ -6,6 +6,7 @@ import 'package:image_search/presentation/home/home_ui_event.dart';
 import 'package:image_search/presentation/home/home_view_model.dart';
 import '../../domain/model/photo.dart';
 import 'component/photo_widget.dart';
+import 'home_state.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -77,44 +78,48 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          StreamBuilder<List<Photo>>(
-            stream: viewModel.photoStream,
-            builder: (context, photoSnapshot) {
+          StreamBuilder<HomeState>(
+            stream: viewModel.stateStream,
+            builder: (context, snapshot) {
 
-              if (!photoSnapshot.hasData) {
+              if (!snapshot.hasData) {
                 return const Center(child: CircularProgressIndicator());
               }
 
-              final photos = photoSnapshot.data!;
+              final state = snapshot.data!;
 
-              return StreamBuilder<bool>(
-                stream: viewModel.isLoadingStream, // ViewModel에 만드신 로딩 스트림
-                initialData: false,
-                builder: (context, loadingSnapshot) {
-                  final isLoading = loadingSnapshot.data ?? false;
+              if (state.isLoading) {
+                return const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
+                      Text("이미지를 불러오는 중..."),
+                    ],
+                  ),
+                );
+              }
 
-                  if (isLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+              if (state.photos.isEmpty) {
+                return const Expanded(
+                  child: Center(child: Text("검색 결과가 없습니다.")),
+                );
+              }
 
-                  return Expanded(
-                    child: photos.isEmpty
-                        ? const Center(child: Text("검색 결과가 없습니다."))
-                        : GridView.builder(
-                            padding: const EdgeInsets.all(16.0),
-                            itemCount: photos.length,
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 16,
-                                  mainAxisSpacing: 16,
-                                ),
-                            itemBuilder: (context, index) {
-                              return PhotoWidget(photo: photos[index]);
-                            },
-                          ),
-                  );
-                },
+              return Expanded(
+                child: GridView.builder(
+                  padding: const EdgeInsets.all(16.0),
+                  itemCount: state.photos.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                  ),
+                  itemBuilder: (context, index) {
+                    return PhotoWidget(photo: state.photos[index]);
+                  },
+                ),
               );
             },
           ),

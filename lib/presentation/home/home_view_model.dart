@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../../data/data_source/result.dart';
 import '../../domain/repository/photo_api_repository.dart';
 import '../../domain/model/photo.dart';
 
@@ -11,7 +12,17 @@ class HomeViewModel {
   HomeViewModel(this.repository);
 
   Future<void> fetch(String query) async{
-    final result = await repository.fetch(query);
-    _photoStreamController.add(result);
+    final Result<List<Photo>> result = await repository.fetch(query);
+
+
+    if(result is Success<List<Photo>>){
+      _photoStreamController.add(result.data);
+    }else if(result is Error){
+
+    }else{
+
+    }
+
+
   }
 }
